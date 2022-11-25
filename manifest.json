@@ -1,0 +1,15 @@
+{
+  "name": "HackRoulette",
+  "version": "1.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "img/icon-HackRoulette16.png",
+    "128": "img/icon-HackRoulette128.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["emailjs.js", "content.js"],
+      "matches": ["https://cachedownload.wplay.co/live/*"]
+    }
+  ]
+}
