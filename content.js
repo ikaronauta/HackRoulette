@@ -1,5 +1,6 @@
 //Inicialización de Constantes
 const cantidad = 13;
+const emails = true;
 const rojos = [
   0, 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
 ];
@@ -17,45 +18,56 @@ const dataInit = "KJm4o29NHuRLyOVUr";
 const serviceID = "default_service";
 const templateID = "template_dhd042k";
 
-console.log("Start Hack");
-emailjs.init(dataInit);
+function inicio(){
+  console.log("Start Hack");
+  emailjs.init(dataInit);
 
-setInterval(() => {
-  location.reload();
-}, 1200000);
+  Notification.requestPermission().then(result => {
+    console.log("Permiso: " + result)
+  });
 
-let validacionMinuto = setInterval(() => {
-  validacion();
-}, 60000);
+  setInterval(() => {
+    location.reload();
+  }, 1200000);
 
-setTimeout(() => {
-  //Clic automatico para abrir el contenedor principal
-  if (document.getElementsByClassName("sidebar-buttons")[0]) {
-    //Nombre de la ruleta
-    nameRoullete =
-      "R- " +
-      document.getElementsByClassName("header__table-info")[0].firstElementChild
-        .textContent;
-
-    document.getElementsByClassName("sidebar-buttons")[0].children[4].click();
-
-    lanzarApp();
-  } else {
-    if (document.getElementsByClassName("lobby-categories__panel")[0]) {
-      //preguntar si esta el contenedor del loby, en caso de que sea false enviar correo y limpiar setinterval - de lo contrario (Analizar que se debe hacer)
-      let dataEmail = {
-        roullete: "Error",
-        bet: "App No Iniciada",
-        message: "Error",
-      };
-      clearInterval(validacionMinuto);
-      sendEmail(dataEmail);
-      alert("Failed");
+  let validacionMinuto = setInterval(() => {
+    validacion();
+  }, 60000);
+  
+  setTimeout(() => {
+    //Clic automatico para abrir el contenedor principal
+    if (document.getElementsByClassName("sidebar-buttons")[0]) {
+      //Nombre de la ruleta
+      nameRoullete =
+        "R- " +
+        document.getElementsByClassName("header__table-info")[0].firstElementChild
+          .textContent;
+  
+      document.getElementsByClassName("sidebar-buttons")[0].children[4].click();
+  
+      lanzarApp();
     } else {
-      validacion();
+      if (document.getElementsByClassName("lobby-categories__panel")[0]) {
+        let dataEmail = {
+          roullete: "Error",
+          bet: "App No Iniciada",
+          message: "Error",
+        };
+        
+        if(emails){
+          clearInterval(validacionMinuto);
+          sendEmail(dataEmail);
+          setTimeout(() => {
+            alert("Failed");
+          }, 4000); 
+        } 
+        new Notification(dataEmail.bet)
+      } else {
+        validacion();
+      }
     }
-  }
-}, 20000);
+  }, 20000);
+}
 
 function lanzarApp() {
   setTimeout(() => {
@@ -69,6 +81,8 @@ function lanzarApp() {
 
 function app() {
   if (document.querySelectorAll(".modal-body__content")[0]) {
+    start = true;
+
     //Contenedor padre
     let containerNumbers = document
       .querySelectorAll(".modal-body__content")[0]
@@ -80,7 +94,7 @@ function app() {
     let observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length) {
-          start = true;
+          
           dataNumbers = [];
 
           for (let i = 0; i < 20; i++) {
@@ -125,7 +139,15 @@ function apuestaRojos() {
     }
   }
 
-  if (count === cantidad) sendEmail(dataEmail);
+  if (count === cantidad) {
+    new Notification(dataEmail.bet, {
+      body: dataEmail.roullete
+    });
+
+    if (emails) {
+      sendEmail(dataEmail);
+    } 
+  }
 }
 
 function apuestaNegros() {
@@ -143,7 +165,15 @@ function apuestaNegros() {
     }
   }
 
-  if (count === cantidad) sendEmail(dataEmail);
+  if (count === cantidad) {
+    new Notification(dataEmail.bet, {
+      body: dataEmail.roullete
+    });
+
+    if (emails) {
+      sendEmail(dataEmail);
+    } 
+  }
 }
 
 function apuestaImpares() {
@@ -161,7 +191,15 @@ function apuestaImpares() {
     }
   }
 
-  if (count === cantidad) sendEmail(dataEmail);
+  if (count === cantidad) {
+    new Notification(dataEmail.bet, {
+      body: dataEmail.roullete
+    });
+
+    if (emails) {
+      sendEmail(dataEmail);
+    } 
+  }
 }
 
 function apuestaPares() {
@@ -179,7 +217,15 @@ function apuestaPares() {
     }
   }
 
-  if (count === cantidad) sendEmail(dataEmail);
+  if (count === cantidad) {
+    new Notification(dataEmail.bet, {
+      body: dataEmail.roullete
+    });
+
+    if (emails) {
+      sendEmail(dataEmail);
+    } 
+  }
 }
 
 function apuestaPrimerMitad() {
@@ -197,7 +243,15 @@ function apuestaPrimerMitad() {
     }
   }
 
-  if (count === cantidad) sendEmail(dataEmail);
+  if (count === cantidad) {
+    new Notification(dataEmail.bet, {
+      body: dataEmail.roullete
+    });
+
+    if (emails) {
+      sendEmail(dataEmail);
+    } 
+  }
 }
 
 function apuestaSegundaMitad() {
@@ -215,7 +269,15 @@ function apuestaSegundaMitad() {
     }
   }
 
-  if (count === cantidad) sendEmail(dataEmail);
+  if (count === cantidad) {
+    new Notification(dataEmail.bet, {
+      body: dataEmail.roullete
+    });
+
+    if (emails) {
+      sendEmail(dataEmail);
+    } 
+  }
 }
 
 function sendEmail(dataEmail) {
@@ -245,3 +307,5 @@ function validacion() {
     location.reload();
   }
 }
+
+inicio();
