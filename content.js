@@ -18,12 +18,12 @@ const dataInit = dataEmails.hackrouletteProject.dataInit;
 const serviceID = dataEmails.hackrouletteProject.serviceID;
 const templateID = dataEmails.hackrouletteProject.templateID;
 
-function inicio(){
+function inicio() {
   console.log("Start Hack");
   emailjs.init(dataInit);
 
-  Notification.requestPermission().then(result => {
-    console.log("Permiso: " + result)
+  Notification.requestPermission().then((result) => {
+    console.log("Permiso: " + result);
   });
 
   setInterval(() => {
@@ -33,18 +33,18 @@ function inicio(){
   let validacionMinuto = setInterval(() => {
     validacion();
   }, 60000);
-  
+
   setTimeout(() => {
     //Clic automatico para abrir el contenedor principal
     if (document.getElementsByClassName("sidebar-buttons")[0]) {
       //Nombre de la ruleta
       nameRoullete =
         "R- " +
-        document.getElementsByClassName("header__table-info")[0].firstElementChild
-          .textContent;
-  
+        document.getElementsByClassName("header__table-info")[0]
+          .firstElementChild.textContent;
+
       document.getElementsByClassName("sidebar-buttons")[0].children[4].click();
-  
+
       lanzarApp();
     } else {
       if (document.getElementsByClassName("lobby-categories__panel")[0]) {
@@ -53,15 +53,15 @@ function inicio(){
           bet: "App No Iniciada",
           message: "Error",
         };
-        
-        if(emails){
+
+        if (emails) {
           clearInterval(validacionMinuto);
           sendEmail(dataEmail);
           setTimeout(() => {
             alert("Failed");
-          }, 4000); 
-        } 
-        new Notification(dataEmail.bet)
+          }, 4000);
+        }
+        new Notification(dataEmail.bet);
       } else {
         validacion();
       }
@@ -94,7 +94,6 @@ function app() {
     let observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length) {
-          
           dataNumbers = [];
 
           for (let i = 0; i < 20; i++) {
@@ -141,12 +140,12 @@ function apuestaRojos() {
 
   if (count === cantidad) {
     new Notification(dataEmail.bet, {
-      body: dataEmail.roullete
+      body: dataEmail.roullete,
     });
 
     if (emails) {
       sendEmail(dataEmail);
-    } 
+    }
   }
 }
 
@@ -167,12 +166,12 @@ function apuestaNegros() {
 
   if (count === cantidad) {
     new Notification(dataEmail.bet, {
-      body: dataEmail.roullete
+      body: dataEmail.roullete,
     });
 
     if (emails) {
       sendEmail(dataEmail);
-    } 
+    }
   }
 }
 
@@ -193,12 +192,12 @@ function apuestaImpares() {
 
   if (count === cantidad) {
     new Notification(dataEmail.bet, {
-      body: dataEmail.roullete
+      body: dataEmail.roullete,
     });
 
     if (emails) {
       sendEmail(dataEmail);
-    } 
+    }
   }
 }
 
@@ -219,12 +218,12 @@ function apuestaPares() {
 
   if (count === cantidad) {
     new Notification(dataEmail.bet, {
-      body: dataEmail.roullete
+      body: dataEmail.roullete,
     });
 
     if (emails) {
       sendEmail(dataEmail);
-    } 
+    }
   }
 }
 
@@ -245,12 +244,12 @@ function apuestaPrimerMitad() {
 
   if (count === cantidad) {
     new Notification(dataEmail.bet, {
-      body: dataEmail.roullete
+      body: dataEmail.roullete,
     });
 
     if (emails) {
       sendEmail(dataEmail);
-    } 
+    }
   }
 }
 
@@ -271,12 +270,12 @@ function apuestaSegundaMitad() {
 
   if (count === cantidad) {
     new Notification(dataEmail.bet, {
-      body: dataEmail.roullete
+      body: dataEmail.roullete,
     });
 
     if (emails) {
       sendEmail(dataEmail);
-    } 
+    }
   }
 }
 
