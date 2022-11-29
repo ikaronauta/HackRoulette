@@ -14,9 +14,9 @@ let start = false;
 let nameRoullete;
 
 //Data Email
-const dataInit = "KJm4o29NHuRLyOVUr";
-const serviceID = "default_service";
-const templateID = "template_dhd042k";
+const dataInit = dataEmails.hackrouletteProject.dataInit;
+const serviceID = dataEmails.hackrouletteProject.serviceID;
+const templateID = dataEmails.hackrouletteProject.templateID;
 
 function inicio(){
   console.log("Start Hack");

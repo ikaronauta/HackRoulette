@@ -8,7 +8,7 @@
   },
   "content_scripts": [
     {
-      "js": ["emailjs.js", "content.js"],
+      "js": ["emailjs.js", "data.js", "content.js"],
       "matches": ["https://cachedownload.wplay.co/live/*"]
     }
   ]

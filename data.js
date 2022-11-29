@@ -1,4 +1,4 @@
-const emails = {
+const dataEmails = {
   ortizgalindoj: {
     dataInit: "F1w7vpZPw9gzhNrt6",
     serviceID: "default_service",
@@ -13,5 +13,10 @@ const emails = {
     dataInit: "KJm4o29NHuRLyOVUr",
     serviceID: "default_service",
     templateID: "template_dhd042k",
+  },
+    hackrouletteProject: {
+    dataInit: "u6oixJMnD0KohpG4C",
+    serviceID: "default_service",
+    templateID: "template_qiet1iv",
   },
 };
