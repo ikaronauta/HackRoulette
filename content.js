@@ -1,4 +1,5 @@
 //Inicialización de Constantes
+const roullete = "Wplay Ruleta en vivo";
 const cantidad = 6;
 const emails = false;
 const rojoNum = [
@@ -64,6 +65,8 @@ function inicio() {
         lanzarApp();
       } else {
         if (document.getElementsByClassName("lobby-categories__panel")[0]) {
+          arranque();
+
           let data = {
             roullete: "Error",
             bet: "App No Iniciada",
@@ -92,6 +95,9 @@ function inicio() {
 function lanzarApp() {
   setTimeout(() => {
     if (document.querySelectorAll(".modal-body__content")[0]) {
+      if (document.getElementsByClassName("lobby-category-item__icon")[3]) {
+        arranque();
+      }
       app();
     } else {
       location.reload();
@@ -265,6 +271,11 @@ function sendEmail(data) {
 }
 
 function validacion() {
+  if (document.getElementsByClassName("session-modals")[0])
+    document
+      .getElementsByClassName("session-modals")[0]
+      .firstChild.children[1].children[2].firstChild.click();
+
   if (document.getElementsByClassName("sidebar-buttons")[0]) {
     //Nombre de la ruleta
     nameRoullete =
@@ -282,19 +293,19 @@ function validacion() {
     } else
       document.getElementsByClassName("sidebar-buttons")[0].children[4].click();
   } else {
-    location.reload();
+    if (document.getElementsByClassName("lobby-category-item__icon")[3]) {
+      arranque();
+    } else {
+      location.reload();
+    }
   }
-}
-
-function cargarLocalStorage() {
-  localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
 }
 
 function emailAndLocalStorage(bet, count) {
   let data = {
     fecha: new Date(),
     roullete: nameRoullete,
-    bet: bet,
+    bet: count + " " + bet,
     message: dataNumbers,
     counter: count,
   };
@@ -308,6 +319,31 @@ function emailAndLocalStorage(bet, count) {
 
   if (emails) {
     sendEmail(data);
+  }
+}
+
+function arranque() {
+  if (document.getElementsByClassName("lobby-category-item__icon")[3]) {
+    setTimeout(() => {
+      document.getElementsByClassName("lobby-category-item__icon")[3].click();
+    }, 3000);
+
+    setTimeout(() => {
+      if (document.getElementsByClassName("common-scroll__scroll-view")[0]) {
+        let containerInicio = [
+          ...document.getElementsByClassName("lobby-table__name-container"),
+        ];
+
+        containerInicio.forEach((item) => {
+          if (item.textContent == roullete) {
+            console.log(item);
+            item.click();
+          }
+        });
+      } else {
+        arranque();
+      }
+    }, 3000);
   }
 }
 
