@@ -1,10 +1,10 @@
 //Inicialización de Constantes
-const cantidad = 13;
-const emails = true;
-const rojos = [
+const cantidad = 6;
+const emails = false;
+const rojoNum = [
   0, 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
 ];
-const negros = [
+const negrosNum = [
   0, 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35,
 ];
 
@@ -12,6 +12,14 @@ const negros = [
 let dataNumbers = [];
 let start = false;
 let nameRoullete;
+let fecha = new Date();
+let countRojo = cantidad - 1;
+let countNegro = cantidad - 1;
+let countImpares = cantidad - 1;
+let countPares = cantidad - 1;
+let countPrimeraMitad = cantidad - 1;
+let countSegundaMitad = cantidad - 1;
+let dataStorage;
 
 //Data Email
 const dataInit = dataEmails.hackrouletteProject.dataInit;
@@ -19,7 +27,7 @@ const serviceID = dataEmails.hackrouletteProject.serviceID;
 const templateID = dataEmails.hackrouletteProject.templateID;
 
 function inicio() {
-  console.log("Start Hack");
+  console.log(`Start - ${fecha.toLocaleTimeString()}`);
   emailjs.init(dataInit);
 
   Notification.requestPermission().then((result) => {
@@ -31,40 +39,52 @@ function inicio() {
   }, 1200000);
 
   let validacionMinuto = setInterval(() => {
-    validacion();
+    try {
+      validacion();
+    } catch (error) {
+      console.log(`Error- ${error} / Hora - ${fecha.toLocaleTimeString()}`);
+      location.reload();
+    }
   }, 60000);
 
   setTimeout(() => {
-    //Clic automatico para abrir el contenedor principal
-    if (document.getElementsByClassName("sidebar-buttons")[0]) {
-      //Nombre de la ruleta
-      nameRoullete =
-        "R- " +
-        document.getElementsByClassName("header__table-info")[0]
-          .firstElementChild.textContent;
+    try {
+      //Clic automatico para abrir el contenedor principal
+      if (document.getElementsByClassName("sidebar-buttons")[0]) {
+        //Nombre de la ruleta
+        nameRoullete =
+          "R- " +
+          document.getElementsByClassName("header__table-info")[0]
+            .firstElementChild.textContent;
 
-      document.getElementsByClassName("sidebar-buttons")[0].children[4].click();
+        document
+          .getElementsByClassName("sidebar-buttons")[0]
+          .children[4].click();
 
-      lanzarApp();
-    } else {
-      if (document.getElementsByClassName("lobby-categories__panel")[0]) {
-        let dataEmail = {
-          roullete: "Error",
-          bet: "App No Iniciada",
-          message: "Error",
-        };
-
-        if (emails) {
-          clearInterval(validacionMinuto);
-          sendEmail(dataEmail);
-          setTimeout(() => {
-            alert("Failed");
-          }, 4000);
-        }
-        new Notification(dataEmail.bet);
+        lanzarApp();
       } else {
-        validacion();
+        if (document.getElementsByClassName("lobby-categories__panel")[0]) {
+          let data = {
+            roullete: "Error",
+            bet: "App No Iniciada",
+            message: "Error",
+          };
+
+          if (emails) {
+            clearInterval(validacionMinuto);
+            sendEmail(data);
+            setTimeout(() => {
+              alert("Failed");
+            }, 4000);
+          }
+          new Notification(data.bet);
+        } else {
+          validacion();
+        }
       }
+    } catch (error) {
+      console.log(`Error- ${error} / Hora - ${fecha.toLocaleTimeString()}`);
+      location.reload();
     }
   }, 20000);
 }
@@ -80,108 +100,100 @@ function lanzarApp() {
 }
 
 function app() {
-  if (document.querySelectorAll(".modal-body__content")[0]) {
-    start = true;
+  try {
+    if (document.querySelectorAll(".modal-body__content")[0]) {
+      //Contenedor padre
+      let containerNumbers = document
+        .querySelectorAll(".modal-body__content")[0]
+        .querySelectorAll(".common-scroll__scroll-view-child")[0].firstChild;
 
-    //Contenedor padre
-    let containerNumbers = document
-      .querySelectorAll(".modal-body__content")[0]
-      .querySelectorAll(".common-scroll__scroll-view-child")[0].firstChild;
+      if (localStorage.getItem(nameRoullete)) {
+        dataStorage = JSON.parse(localStorage.getItem(nameRoullete));
+      } else {
+        dataStorage = {
+          rojo: [],
+          negro: [],
+          impares: [],
+          pares: [],
+          primeraMitad: [],
+          segundaMitad: [],
+        };
+      }
+      localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
 
-    //Señal para indicar que la extensión se inicio correctamente
-    console.log("Aplicación Iniciada " + nameRoullete);
+      //Señal para indicar que la extensión se inicio correctamente
+      console.log("Aplicación Iniciada " + nameRoullete);
+      start = true;
 
-    let observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        if (mutation.addedNodes.length) {
-          dataNumbers = [];
+      let observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.addedNodes.length) {
+            dataNumbers = [];
 
-          for (let i = 0; i < 20; i++) {
-            dataNumbers.push(
-              parseInt(containerNumbers.children[i].children[0].textContent)
-            );
+            for (let i = 0; i < 20; i++) {
+              dataNumbers.push(
+                parseInt(containerNumbers.children[i].children[0].textContent)
+              );
+            }
+
+            console.log(dataNumbers);
+
+            apuestaRojos();
+            apuestaNegros();
+            apuestaImpares();
+            apuestaPares();
+            apuestaPrimerMitad();
+            apuestaSegundaMitad();
+
+            start = true;
           }
-
-          console.log(dataNumbers);
-
-          apuestaRojos();
-          apuestaNegros();
-          apuestaImpares();
-          apuestaPares();
-          apuestaPrimerMitad();
-          apuestaSegundaMitad();
-        }
+        });
       });
-    });
 
-    observer.observe(containerNumbers, {
-      childList: true,
-      attributes: true,
-    });
-  } else {
+      observer.observe(containerNumbers, {
+        childList: true,
+        attributes: true,
+      });
+    } else {
+      location.reload();
+    }
+  } catch (error) {
+    console.log(`Error- ${error} / Hora - ${fecha.toLocaleTimeString()}`);
     location.reload();
   }
 }
 
 function apuestaRojos() {
-  let dataEmail = {
-    roullete: nameRoullete,
-    bet: "Rojo",
-    message: dataNumbers,
-  };
-
   let count = 0;
 
   for (let i = 0; i < cantidad; i++) {
-    if (rojos.indexOf(dataNumbers[i]) != -1) {
+    if (rojoNum.indexOf(dataNumbers[i]) != -1) {
       count++;
     }
   }
 
   if (count === cantidad) {
-    new Notification(dataEmail.bet, {
-      body: dataEmail.roullete,
-    });
-
-    if (emails) {
-      sendEmail(dataEmail);
-    }
+    countRojo++;
+    emailAndLocalStorage((bet = "rojo"), countRojo);
   }
 }
 
 function apuestaNegros() {
-  let dataEmail = {
-    roullete: nameRoullete,
-    bet: "Negro",
-    message: dataNumbers,
-  };
-
   let count = 0;
 
   for (let i = 0; i < cantidad; i++) {
-    if (negros.indexOf(dataNumbers[i]) != -1) {
+    if (negrosNum.indexOf(dataNumbers[i]) != -1) {
       count++;
     }
   }
 
   if (count === cantidad) {
-    new Notification(dataEmail.bet, {
-      body: dataEmail.roullete,
-    });
-
-    if (emails) {
-      sendEmail(dataEmail);
-    }
+    countNegro++;
+    emailAndLocalStorage((bet = "negro"), countNegro);
   }
 }
 
 function apuestaImpares() {
-  let dataEmail = {
-    roullete: nameRoullete,
-    bet: "Impar",
-    message: dataNumbers,
-  };
-
   let count = 0;
 
   for (let i = 0; i < cantidad; i++) {
@@ -191,23 +203,12 @@ function apuestaImpares() {
   }
 
   if (count === cantidad) {
-    new Notification(dataEmail.bet, {
-      body: dataEmail.roullete,
-    });
-
-    if (emails) {
-      sendEmail(dataEmail);
-    }
+    countImpares++;
+    emailAndLocalStorage((bet = "impares"), countImpares);
   }
 }
 
 function apuestaPares() {
-  let dataEmail = {
-    roullete: nameRoullete,
-    bet: "Par",
-    message: dataNumbers,
-  };
-
   let count = 0;
 
   for (let i = 0; i < cantidad; i++) {
@@ -217,23 +218,12 @@ function apuestaPares() {
   }
 
   if (count === cantidad) {
-    new Notification(dataEmail.bet, {
-      body: dataEmail.roullete,
-    });
-
-    if (emails) {
-      sendEmail(dataEmail);
-    }
+    countPares++;
+    emailAndLocalStorage((bet = "pares"), countPares);
   }
 }
 
 function apuestaPrimerMitad() {
-  let dataEmail = {
-    roullete: nameRoullete,
-    bet: "Primera Mitad",
-    message: dataNumbers,
-  };
-
   let count = 0;
 
   for (let i = 0; i < cantidad; i++) {
@@ -243,23 +233,12 @@ function apuestaPrimerMitad() {
   }
 
   if (count === cantidad) {
-    new Notification(dataEmail.bet, {
-      body: dataEmail.roullete,
-    });
-
-    if (emails) {
-      sendEmail(dataEmail);
-    }
+    countPrimeraMitad++;
+    emailAndLocalStorage((bet = "primeraMitad"), countPrimeraMitad);
   }
 }
 
 function apuestaSegundaMitad() {
-  let dataEmail = {
-    roullete: nameRoullete,
-    bet: "Segunda Mitad",
-    message: dataNumbers,
-  };
-
   let count = 0;
 
   for (let i = 0; i < cantidad; i++) {
@@ -269,20 +248,15 @@ function apuestaSegundaMitad() {
   }
 
   if (count === cantidad) {
-    new Notification(dataEmail.bet, {
-      body: dataEmail.roullete,
-    });
-
-    if (emails) {
-      sendEmail(dataEmail);
-    }
+    countSegundaMitad++;
+    emailAndLocalStorage((bet = "segundaMitad"), countSegundaMitad);
   }
 }
 
-function sendEmail(dataEmail) {
-  emailjs.send(serviceID, templateID, dataEmail).then(
+function sendEmail(data) {
+  emailjs.send(serviceID, templateID, data).then(
     () => {
-      console.log(`Sent! ${dataEmail.bet}`);
+      console.log(`Sent! ${data.bet}`);
     },
     (err) => {
       console.log(JSON.stringify(err));
@@ -299,7 +273,12 @@ function validacion() {
         .textContent;
 
     if (document.querySelectorAll(".modal-body__content")[0]) {
-      start ? console.log(nameRoullete) : location.reload();
+      if (start) {
+        start = false;
+        console.log(nameRoullete);
+      } else {
+        location.reload();
+      }
     } else
       document.getElementsByClassName("sidebar-buttons")[0].children[4].click();
   } else {
@@ -307,4 +286,31 @@ function validacion() {
   }
 }
 
+function cargarLocalStorage() {
+  localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
+}
+
+function emailAndLocalStorage(bet, count) {
+  let data = {
+    fecha: new Date(),
+    roullete: nameRoullete,
+    bet: bet,
+    message: dataNumbers,
+    counter: count,
+  };
+
+  dataStorage[bet].push(data);
+  localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
+
+  new Notification(data.bet, {
+    body: data.roullete,
+  });
+
+  if (emails) {
+    sendEmail(data);
+  }
+}
+
 inicio();
+
+// document.getElementsByClassName('with-size-wrapper')[1].firstChild.firstChild.children[13].getBoundingClientRect()
