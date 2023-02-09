@@ -286,6 +286,7 @@ function validacion() {
     if (document.querySelectorAll(".modal-body__content")[0]) {
       if (start) {
         start = false;
+        document.getElementsByClassName("video-player__wrapper")[0].click();
         console.log(nameRoullete);
       } else {
         location.reload();
