@@ -1,6 +1,6 @@
 //Inicialización de Constantes
-const roullete = "Wplay Ruleta en vivo";
-const cantidad = 6;
+// const roullete = "Wplay Ruleta en vivo";
+const cantidad = 10;
 const emails = false;
 const rojoNum = [
   0, 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
@@ -323,6 +323,11 @@ function emailAndLocalStorage(bet, count) {
 }
 
 function arranque() {
+  if (document.getElementsByClassName("session-modals")[0])
+    document
+      .getElementsByClassName("session-modals")[0]
+      .firstChild.children[1].children[2].firstChild.click();
+
   if (document.getElementsByClassName("lobby-category-item__icon")[3]) {
     setTimeout(() => {
       document.getElementsByClassName("lobby-category-item__icon")[3].click();
@@ -330,15 +335,23 @@ function arranque() {
 
     setTimeout(() => {
       if (document.getElementsByClassName("common-scroll__scroll-view")[0]) {
-        let containerInicio = [
-          ...document.getElementsByClassName("lobby-table__name-container"),
-        ];
+        dataRoulletes.forEach((roullete) => {
+          let containerInicio = [
+            ...document.getElementsByClassName("lobby-table__name-container"),
+          ];
 
-        containerInicio.forEach((item) => {
-          if (item.textContent == roullete) {
-            console.log(item);
-            item.click();
-          }
+          containerInicio.forEach((item) => {
+            console.log(item.textContent);
+            if (item.textContent == roullete) {
+              if (
+                item.parentElement.parentElement.parentElement.getElementsByClassName(
+                  "triangle"
+                )[0]
+              )
+                return;
+              else item.click();
+            }
+          });
         });
       } else {
         arranque();
