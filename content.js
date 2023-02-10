@@ -1,6 +1,7 @@
 //Inicialización de Constantes
-// const roullete = "Wplay Ruleta en vivo";
-const cantidad = 10;
+
+const cantidad = 40;
+const cantNotif = 8;
 const emails = false;
 const rojoNum = [
   0, 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
@@ -14,12 +15,6 @@ let dataNumbers = [];
 let start = false;
 let nameRoullete;
 let fecha = new Date();
-let countRojo = cantidad - 1;
-let countNegro = cantidad - 1;
-let countImpares = cantidad - 1;
-let countPares = cantidad - 1;
-let countPrimeraMitad = cantidad - 1;
-let countSegundaMitad = cantidad - 1;
 let dataStorage;
 
 //Data Email
@@ -136,7 +131,7 @@ function app() {
           if (mutation.addedNodes.length) {
             dataNumbers = [];
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < cantidad; i++) {
               dataNumbers.push(
                 parseInt(containerNumbers.children[i].children[0].textContent)
               );
@@ -175,12 +170,12 @@ function apuestaRojos() {
   for (let i = 0; i < cantidad; i++) {
     if (rojoNum.indexOf(dataNumbers[i]) != -1) {
       count++;
+    } else {
+      if (count >= cantNotif) {
+        emailAndLocalStorage((bet = "rojo"), count);
+      }
+      return;
     }
-  }
-
-  if (count === cantidad) {
-    countRojo++;
-    emailAndLocalStorage((bet = "rojo"), countRojo);
   }
 }
 
@@ -190,12 +185,12 @@ function apuestaNegros() {
   for (let i = 0; i < cantidad; i++) {
     if (negrosNum.indexOf(dataNumbers[i]) != -1) {
       count++;
+    } else {
+      if (count >= cantNotif) {
+        emailAndLocalStorage((bet = "negro"), count);
+      }
+      return;
     }
-  }
-
-  if (count === cantidad) {
-    countNegro++;
-    emailAndLocalStorage((bet = "negro"), countNegro);
   }
 }
 
@@ -205,12 +200,12 @@ function apuestaImpares() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] % 2 == 1 || dataNumbers[i] == 0) {
       count++;
+    } else {
+      if (count >= cantNotif) {
+        emailAndLocalStorage((bet = "impares"), count);
+      }
+      return;
     }
-  }
-
-  if (count === cantidad) {
-    countImpares++;
-    emailAndLocalStorage((bet = "impares"), countImpares);
   }
 }
 
@@ -220,12 +215,12 @@ function apuestaPares() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] % 2 == 0 || dataNumbers[i] == 0) {
       count++;
+    } else {
+      if (count >= cantNotif) {
+        emailAndLocalStorage((bet = "pares"), count);
+      }
+      return;
     }
-  }
-
-  if (count === cantidad) {
-    countPares++;
-    emailAndLocalStorage((bet = "pares"), countPares);
   }
 }
 
@@ -235,12 +230,12 @@ function apuestaPrimerMitad() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] <= 18) {
       count++;
+    } else {
+      if (count >= cantNotif) {
+        emailAndLocalStorage((bet = "primeraMitad"), count);
+      }
+      return;
     }
-  }
-
-  if (count === cantidad) {
-    countPrimeraMitad++;
-    emailAndLocalStorage((bet = "primeraMitad"), countPrimeraMitad);
   }
 }
 
@@ -250,12 +245,12 @@ function apuestaSegundaMitad() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] > 18 || dataNumbers[i] == 0) {
       count++;
+    } else {
+      if (count >= cantNotif) {
+        emailAndLocalStorage((bet = "segundaMitad"), count);
+      }
+      return;
     }
-  }
-
-  if (count === cantidad) {
-    countSegundaMitad++;
-    emailAndLocalStorage((bet = "segundaMitad"), countSegundaMitad);
   }
 }
 
@@ -324,40 +319,44 @@ function emailAndLocalStorage(bet, count) {
 }
 
 function arranque() {
-  if (document.getElementsByClassName("session-modals")[0])
-    document
-      .getElementsByClassName("session-modals")[0]
-      .firstChild.children[1].children[2].firstChild.click();
+  try {
+    if (document.getElementsByClassName("session-modals")[0])
+      document
+        .getElementsByClassName("session-modals")[0]
+        .firstChild.children[1].children[2].firstChild.click();
 
-  if (document.getElementsByClassName("lobby-category-item__icon")[3]) {
-    setTimeout(() => {
-      document.getElementsByClassName("lobby-category-item__icon")[3].click();
-    }, 3000);
+    if (document.getElementsByClassName("lobby-category-item__icon")[3]) {
+      setTimeout(() => {
+        document.getElementsByClassName("lobby-category-item__icon")[3].click();
+      }, 3000);
 
-    setTimeout(() => {
-      if (document.getElementsByClassName("common-scroll__scroll-view")[0]) {
-        dataRoulletes.forEach((roullete) => {
-          let containerInicio = [
-            ...document.getElementsByClassName("lobby-table__name-container"),
-          ];
+      setTimeout(() => {
+        if (document.getElementsByClassName("common-scroll__scroll-view")[0]) {
+          dataRoulletes.forEach((roullete) => {
+            let containerInicio = [
+              ...document.getElementsByClassName("lobby-table__name-container"),
+            ];
 
-          containerInicio.forEach((item) => {
-            console.log(item.textContent);
-            if (item.textContent == roullete) {
-              if (
-                item.parentElement.parentElement.parentElement.getElementsByClassName(
-                  "triangle"
-                )[0]
-              )
-                return;
-              else item.click();
-            }
+            containerInicio.forEach((item) => {
+              console.log(item.textContent);
+              if (item.textContent == roullete) {
+                if (
+                  item.parentElement.parentElement.parentElement.getElementsByClassName(
+                    "triangle"
+                  )[0]
+                )
+                  return;
+                else item.click();
+              }
+            });
           });
-        });
-      } else {
-        arranque();
-      }
-    }, 3000);
+        } else {
+          arranque();
+        }
+      }, 3000);
+    }
+  } catch (error) {
+    new Notification(error);
   }
 }
 
