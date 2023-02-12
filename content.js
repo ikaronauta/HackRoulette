@@ -1,7 +1,7 @@
 //Inicialización de Constantes
 
 const cantidad = 40;
-const cantNotif = 8;
+const cantNotif = 11;
 const emails = false;
 const rojoNum = [
   0, 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
@@ -15,7 +15,6 @@ let dataNumbers = [];
 let start = false;
 let nameRoullete;
 let fecha = new Date();
-let dataStorage;
 
 //Data Email
 const dataInit = dataEmails.hackrouletteProject.dataInit;
@@ -68,13 +67,6 @@ function inicio() {
             message: "Error",
           };
 
-          if (emails) {
-            clearInterval(validacionMinuto);
-            sendEmail(data);
-            setTimeout(() => {
-              alert("Failed");
-            }, 4000);
-          }
           new Notification(data.bet);
         } else {
           validacion();
@@ -108,19 +100,7 @@ function app() {
         .querySelectorAll(".modal-body__content")[0]
         .querySelectorAll(".common-scroll__scroll-view-child")[0].firstChild;
 
-      if (localStorage.getItem(nameRoullete)) {
-        dataStorage = JSON.parse(localStorage.getItem(nameRoullete));
-      } else {
-        dataStorage = {
-          rojo: [],
-          negro: [],
-          impares: [],
-          pares: [],
-          primeraMitad: [],
-          segundaMitad: [],
-        };
-      }
-      localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
+      validacionLocalStorage();
 
       //Señal para indicar que la extensión se inicio correctamente
       console.log("Aplicación Iniciada " + nameRoullete);
@@ -170,9 +150,10 @@ function apuestaRojos() {
   for (let i = 0; i < cantidad; i++) {
     if (rojoNum.indexOf(dataNumbers[i]) != -1) {
       count++;
+      cargarLocalStorage(count, (bet = "rojo"));
     } else {
       if (count >= cantNotif) {
-        emailAndLocalStorage((bet = "rojo"), count);
+        sendNotification((bet = "rojo"), count);
       }
       return;
     }
@@ -185,9 +166,10 @@ function apuestaNegros() {
   for (let i = 0; i < cantidad; i++) {
     if (negrosNum.indexOf(dataNumbers[i]) != -1) {
       count++;
+      cargarLocalStorage(count, (bet = "negro"));
     } else {
       if (count >= cantNotif) {
-        emailAndLocalStorage((bet = "negro"), count);
+        sendNotification((bet = "negro"), count);
       }
       return;
     }
@@ -200,9 +182,10 @@ function apuestaImpares() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] % 2 == 1 || dataNumbers[i] == 0) {
       count++;
+      cargarLocalStorage(count, (bet = "impares"));
     } else {
       if (count >= cantNotif) {
-        emailAndLocalStorage((bet = "impares"), count);
+        sendNotification((bet = "impares"), count);
       }
       return;
     }
@@ -215,9 +198,10 @@ function apuestaPares() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] % 2 == 0 || dataNumbers[i] == 0) {
       count++;
+      cargarLocalStorage(count, (bet = "pares"));
     } else {
       if (count >= cantNotif) {
-        emailAndLocalStorage((bet = "pares"), count);
+        sendNotification((bet = "pares"), count);
       }
       return;
     }
@@ -230,9 +214,10 @@ function apuestaPrimerMitad() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] <= 18) {
       count++;
+      cargarLocalStorage(count, (bet = "primeraMitad"));
     } else {
       if (count >= cantNotif) {
-        emailAndLocalStorage((bet = "primeraMitad"), count);
+        sendNotification((bet = "primeraMitad"), count);
       }
       return;
     }
@@ -245,24 +230,14 @@ function apuestaSegundaMitad() {
   for (let i = 0; i < cantidad; i++) {
     if (dataNumbers[i] > 18 || dataNumbers[i] == 0) {
       count++;
+      cargarLocalStorage(count, (bet = "segundaMitad"));
     } else {
       if (count >= cantNotif) {
-        emailAndLocalStorage((bet = "segundaMitad"), count);
+        sendNotification((bet = "segundaMitad"), count);
       }
       return;
     }
   }
-}
-
-function sendEmail(data) {
-  emailjs.send(serviceID, templateID, data).then(
-    () => {
-      console.log(`Sent! ${data.bet}`);
-    },
-    (err) => {
-      console.log(JSON.stringify(err));
-    }
-  );
 }
 
 function validacion() {
@@ -297,24 +272,62 @@ function validacion() {
   }
 }
 
-function emailAndLocalStorage(bet, count) {
-  let data = {
-    fecha: new Date(),
-    roullete: nameRoullete,
-    bet: count + " " + bet,
-    message: dataNumbers,
-    counter: count,
-  };
-
-  dataStorage[bet].push(data);
-  localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
-
-  new Notification(data.bet, {
-    body: data.roullete,
+function sendNotification(bet, count) {
+  new Notification(count + " " + bet, {
+    body: nameRoullete,
   });
+}
 
-  if (emails) {
-    sendEmail(data);
+function cargarLocalStorage(count, bet){
+  validacionLocalStorage();
+
+  let dataStorage = JSON.parse(localStorage.getItem(nameRoullete));
+
+  if(dataStorage[bet].counter < count) {
+    dataStorage[bet].fecha = fecha.toLocaleDateString(),
+    dataStorage[bet].counter = count,
+    dataStorage[bet].roullete = nameRoullete
+  }
+
+  localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
+}
+
+function validacionLocalStorage(){
+  if(!localStorage.getItem(nameRoullete)){
+      let dataStorage = {
+        rojo: {
+          fecha: fecha.toLocaleDateString(),
+          counter: 0,
+          roullete: nameRoullete,
+        },
+        negro: {
+          fecha: fecha.toLocaleDateString(),
+          counter: 0,
+          roullete: nameRoullete,
+        },
+        impares: {
+          fecha: fecha.toLocaleDateString(),
+          counter: 0,
+          roullete: nameRoullete,
+        },
+        pares: {
+          fecha: fecha.toLocaleDateString(),
+          counter: 0,
+          roullete: nameRoullete,
+        },
+        primeraMitad: {
+          fecha: fecha.toLocaleDateString(),
+          counter: 0,
+          roullete: nameRoullete,
+        },
+        segundaMitad: {
+          fecha: fecha.toLocaleDateString(),
+          counter: 0,
+          roullete: nameRoullete,
+        },
+      };
+
+      localStorage.setItem(nameRoullete, JSON.stringify(dataStorage));
   }
 }
 
