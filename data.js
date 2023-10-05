@@ -28,7 +28,7 @@ const dataRoulletes = [
   "Roleta Brasileira",
   "American Roulette",
   "Auto Roulette",
-  "Auto Roulette 2"
+  "Auto Roulette 2",
 ];
 
 // Friday Big Quiz
